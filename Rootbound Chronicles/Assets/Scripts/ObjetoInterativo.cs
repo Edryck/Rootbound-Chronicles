@@ -4,6 +4,7 @@ public class ObjetoInterativo : MonoBehaviour
 {
     private bool jogadorPerto = false;
     private GameObject jogadorRef; // Referência para lembrar que é o jogador
+    public ItemData itemParaDar;
 
     void Update()
     {
@@ -21,10 +22,10 @@ public class ObjetoInterativo : MonoBehaviour
             // Acha o invetário do jogador
             Inventario inv = jogadorRef.GetComponent<Inventario>();
 
-            if (inv != null)
+            if (inv != null && itemParaDar != null)
             {
                 // Aqui passa o nome do objeto como nome do item
-                inv.AdicionarItem(gameObject.name, 1);
+                inv.AdicionarItem(itemParaDar, 1);
                 Destroy(gameObject);
             }
         }

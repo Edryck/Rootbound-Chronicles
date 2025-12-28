@@ -7,6 +7,9 @@ TagManager:
   - Lava
   - Cura
   - Pocao
+  - Bau
+  - NPC
+  - Item
   layers:
   - Default
   - TransparentFX
