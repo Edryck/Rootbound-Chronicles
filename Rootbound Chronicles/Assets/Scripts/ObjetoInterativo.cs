@@ -3,6 +3,7 @@ using UnityEngine;
 public class ObjetoInterativo : MonoBehaviour
 {
     private bool jogadorPerto = false;
+    private GameObject jogadorRef; // Referência para lembrar que é o jogador
 
     void Update()
     {
@@ -17,8 +18,15 @@ public class ObjetoInterativo : MonoBehaviour
     {
         if (gameObject.tag == "Item")
         {
-            Destroy(gameObject);
-            Debug.Log("Você pegou o item: " + gameObject.name);
+            // Acha o invetário do jogador
+            Inventario inv = jogadorRef.GetComponent<Inventario>();
+
+            if (inv != null)
+            {
+                // Aqui passa o nome do objeto como nome do item
+                inv.AdicionarItem(gameObject.name, 1);
+                Destroy(gameObject);
+            }
         }
         if (gameObject.tag == "NPC")
         {
@@ -37,6 +45,7 @@ public class ObjetoInterativo : MonoBehaviour
         if (other.tag == "Player")
         {
             jogadorPerto = true;
+            jogadorRef = other.gameObject;
             Debug.Log("Tecle E para interagir");
             // Aqui liga o batão de interagir
         }
@@ -48,6 +57,7 @@ public class ObjetoInterativo : MonoBehaviour
         if (other.tag == "Player")
         {
             jogadorPerto = false;
+            jogadorRef = null;
             // Aqui que vai desligar o balãozinho de interação
         }
     }
