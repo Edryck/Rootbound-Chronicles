@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf6956a6e7fd2224f99fd0b6c83b4ff6, type: 3}
   m_Name: Novo Item
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  nomeDoItem: Sla
-  descricao: asfasf
+  nomeDoItem: Espada Velha Enferrujada
+  descricao: "N\xE3o muito boa"
   loreOculta: asfasfsaf
   icone: {fileID: 0}

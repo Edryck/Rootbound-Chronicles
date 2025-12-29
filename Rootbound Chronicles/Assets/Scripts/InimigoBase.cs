@@ -3,7 +3,7 @@ using UnityEngine;
 public class InimigoBase : MonoBehaviour
 {
     [Header("Status do Inimigo")]
-    public string nomeDoInimigo;
+    public string nomeInimigo;
     public int vidaMaxima = 10;
     public float velocidade = 2f;
     public float raioDeVisao = 5f; // Distância para começar a seguir
@@ -54,7 +54,7 @@ public class InimigoBase : MonoBehaviour
 
             // Comportamento de patrulha
             // Anda mais devagar na patrulha
-            transform.position = Vector2.MoveTowards(transform.position, destinoPatrulha, velocidade * 0.5f * Time.deltaTime)
+            transform.position = Vector2.MoveTowards(transform.position, destinoPatrulha, velocidade * 0.5f * Time.deltaTime);
 
             // Se chegou no destino
             if (Vector2.Distance(transform.position, destinoPatrulha) < 0.2f)
@@ -85,7 +85,7 @@ public class InimigoBase : MonoBehaviour
     void DefinirNovoDestinoPatrulha()
     {
         // Pega um ponto aleatório dentro de um círculo X e soma com a posição inicial
-        destinoPatrulha = pontoInicial + Random.insideUnitCicle * raioDePatrulha;
+        destinoPatrulha = pontoInicial + Random.insideUnitCircle * raioDePatrulha;
     }
 
     // Lógica de movimento padrão
@@ -103,7 +103,7 @@ public class InimigoBase : MonoBehaviour
     public void ReceberDano(int dano)
     {
         vidaAtual -= dano;
-        Debug.Log(nomeDoInimido + " tomou " + dano + "de dano!");
+        Debug.Log(nomeInimigo + " tomou " + dano + "de dano!");
 
         if (vidaAtual <= 0)
         {
@@ -111,9 +111,9 @@ public class InimigoBase : MonoBehaviour
         }
     }
 
-    protected virtual Morrer()
+    protected virtual void Morrer()
     {
-        Debug.Log(nomeDoInimigo + " morreu!");
+        Debug.Log(nomeInimigo + " morreu!");
         Destroy(gameObject);
         // Colocar aqui a lógica de drop de item e a animação de morte
     }
