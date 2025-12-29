@@ -7,7 +7,9 @@ public class InimigoBase : MonoBehaviour
     public int vidaMaxima = 10;
     public float velocidade = 2f;
     public float raioDeVisao = 5f; // Distância para começar a seguir
-    public float raioDeAtaque = 1f; // Distância para bater
+    public float raioDeAtaque = 2f; // Distância para bater
+    public float taxaDeAtaque = 1f; // Ataques por segundo
+    public float proximoAtaque = 0f;
 
     [Header("Patrulha")]
     public float raioDePatrulha = 3f; // O quão longe ele anda do ponto inicial
@@ -18,7 +20,8 @@ public class InimigoBase : MonoBehaviour
 
     [Header("Debug")]
     public int vidaAtual;
-    protected Transform alvo; // Normalmente o jogador
+    private Rigidbody2D rb;
+    protected Transform alvo;
 
     // Estados simples para IA
     protected enum Estado {
@@ -31,6 +34,7 @@ public class InimigoBase : MonoBehaviour
     // Start é virtual para que os filhos possam adicionar coisas depois
     protected virtual void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         vidaAtual = vidaMaxima;
         // Acha o jogador de forma automatica se estiver a tag Player
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -54,7 +58,8 @@ public class InimigoBase : MonoBehaviour
 
             // Comportamento de patrulha
             // Anda mais devagar na patrulha
-            transform.position = Vector2.MoveTowards(transform.position, destinoPatrulha, velocidade * 0.5f * Time.deltaTime);
+            Vector2 novaPosPatrulha = Vector2.MoveTowards(rb.position, destinoPatrulha, velocidade * 0.5f * Time.deltaTime);
+            rb.MovePosition(novaPosPatrulha);
 
             // Se chegou no destino
             if (Vector2.Distance(transform.position, destinoPatrulha) < 0.2f)
@@ -84,14 +89,14 @@ public class InimigoBase : MonoBehaviour
 
     void DefinirNovoDestinoPatrulha()
     {
-        // Pega um ponto aleatório dentro de um círculo X e soma com a posição inicial
-        destinoPatrulha = pontoInicial + Random.insideUnitCircle * raioDePatrulha;
+        destinoPatrulha = pontoInicial + (Random.insideUnitCircle * raioDePatrulha);
     }
 
     // Lógica de movimento padrão
     protected virtual void MoverParaPlayer()
     {
-        transform.position = Vector2.MoveTowards(transform.position, alvo.position, velocidade * Time.deltaTime);
+        Vector2 novaPosicao = Vector2.MoveTowards(rb.position, alvo.position, velocidade * Time.fixedDeltaTime);
+        rb.MovePosition(novaPosicao);
         // Adicionar a lógica para a troca de sprites de movimento aqui
     }
 
@@ -116,6 +121,16 @@ public class InimigoBase : MonoBehaviour
         Debug.Log(nomeInimigo + " morreu!");
         Destroy(gameObject);
         // Colocar aqui a lógica de drop de item e a animação de morte
+    }
+
+    // Para o inimigo sentir o ambiente, ex: ele leva dano na lava agora
+    protected void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Lava") // Caso tenha "dano ambiental", "area venenosa", etc. Adicionar um if/else
+        {
+            ReceberDano(1); // O inimigo vai recceber dano, futuramente vou trabalhar o sistema de resistencias, etc.
+            Debug.Log(nomeInimigo + " caiu na lava!");
+        }
     }
 
     // Desenha círculos no editor para ver a visão do inimigo

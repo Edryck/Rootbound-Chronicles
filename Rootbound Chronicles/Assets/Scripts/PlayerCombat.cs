@@ -14,6 +14,20 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
+        // Lê a direção que o jogador está tentando ir
+        float inputX = Input.GetAxisRaw("Horizontal");
+        float inputY = Input.GetAxisRaw("Vertical");
+
+        // Se tiver movimento, atualiza a posição do ponto de ataque
+        if (inputX != 0 || inputY != 0)
+        {
+            // Cria um vetor na direção do input
+            Vector2 direcao = new Vector2(inputX, inputY).normalized;
+
+            // Defina a posição ralativa ao centro do jogador
+            pontoDeAtaque.localPosition = direcao * 0.8f;
+        }
+
         // Se já passou o tempo de recarga e apertou o botão (Mouse esq)
         if (Time.time >= proximoAtaque && Input.GetButtonDown("Fire1"))
         {
