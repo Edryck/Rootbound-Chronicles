@@ -83,7 +83,11 @@ public class InimigoBase : MonoBehaviour
         else
         {
             estadoAtual = Estado.Atacando;
-            TentarAtacar();
+            if (Time.time >= proximoAtaque)
+            {
+                TentarAtacar();
+                proximoAtaque = Time.time + 1f / taxaDeAtaque;
+            }
         }
     }
 

@@ -12,7 +12,7 @@ public class InimigoSlime : InimigoBase
             if (playerScript != null)
             {
                 if (Time.time >= proximoAtaque) {
-                    playerScript.ReceberDano(1); // O Slime tira 1 de vida, para mudar isso é só troca onde tá o 1
+                    playerScript.ReceberDano(1, TipoDano.Fisico); // O Slime tira 1 de vida, para mudar isso é só troca onde tá o 1
                     proximoAtaque = Time.time + 1f / taxaDeAtaque;
                     Debug.Log("Slime atacou o jogador!");
                 }

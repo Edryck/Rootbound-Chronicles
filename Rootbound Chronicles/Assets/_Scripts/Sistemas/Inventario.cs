@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 public class Inventario : MonoBehaviour
 {
+    // Singleton simples para facilitar o acesso
+    public static Inventario instance;
+
     [System.Serializable]
     public class SlotDeItem
     {
