@@ -23,6 +23,8 @@ public class InimigoBase : MonoBehaviour
     private Rigidbody2D rb;
     protected Transform alvo;
 
+    protected Animator animator;
+
     // Estados simples para IA
     protected enum Estado {
         Ocioso,
@@ -35,6 +37,8 @@ public class InimigoBase : MonoBehaviour
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+
         vidaAtual = vidaMaxima;
         // Acha o jogador de forma automatica se estiver a tag Player
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -123,8 +127,18 @@ public class InimigoBase : MonoBehaviour
     protected virtual void Morrer()
     {
         Debug.Log(nomeInimigo + " morreu!");
-        Destroy(gameObject);
-        // Colocar aqui a lógica de drop de item e a animação de morte
+
+        if (animator != null)
+        {
+            animator.SetTrigger("Morrer");
+        }
+        // Impede que o corpo morto continue perseguindo ou dando dano
+        rb.linearVelocity = Vector2.zero; // Para de deslizar
+        GetComponent<Collider2D>().enabled = false; // Jogador anda por cima do corpo
+        this.enabled = false; // Desliga o Update()
+
+        // O 1f é o tempo em segundos. Caso seja necessário mudar... mude (Conforme a duração da animação)
+        Destroy(gameObject, 1f);
     }
 
     // Para o inimigo sentir o ambiente, ex: ele leva dano na lava agora

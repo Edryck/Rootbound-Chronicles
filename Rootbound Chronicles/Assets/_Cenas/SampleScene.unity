@@ -119,6 +119,33 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &192820080 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6886499963621989492, guid: 18252c4c4be72a3488f1a96a24407c90, type: 3}
+  m_PrefabInstance: {fileID: 840711683}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &192820086
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 192820080}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8ee36e5ceb5c3ea4aab117ce12c65d6c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &213430308
 GameObject:
   m_ObjectHideFlags: 0
@@ -792,6 +819,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 486859754009546381, guid: 18252c4c4be72a3488f1a96a24407c90, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -7078261816480267791, guid: 2ba33d0650bec0a43b79e55b72cc3677, type: 3}
     - target: {fileID: 1201654447777763588, guid: 18252c4c4be72a3488f1a96a24407c90, type: 3}
       propertyPath: raioDePatrulha
       value: 5
@@ -843,7 +874,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6886499963621989492, guid: 18252c4c4be72a3488f1a96a24407c90, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 192820086}
   m_SourcePrefab: {fileID: 100100000, guid: 18252c4c4be72a3488f1a96a24407c90, type: 3}
 --- !u!1 &1431603625
 GameObject:
@@ -1152,6 +1186,7 @@ GameObject:
   - component: {fileID: 1842176455}
   - component: {fileID: 1842176453}
   - component: {fileID: 1842176456}
+  - component: {fileID: 1842176457}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1172,6 +1207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 5
+  animator: {fileID: 1842176457}
 --- !u!50 &1842176449
 Rigidbody2D:
   serializedVersion: 5
@@ -1252,7 +1288,7 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 1
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -1315,7 +1351,7 @@ BoxCollider2D:
     oldSize: {x: 1, y: 1}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
-    drawMode: 0
+    drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
@@ -1345,9 +1381,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d3472be7cb910b469400903b5c7b214, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
+  danoBase: 2
+  danoFisicoTotal: 0
+  danoMagicoTotal: 0
   pontoDeAtaque: {fileID: 2109048193}
-  raioDeAtaque: 1
-  danoAtaque: 2
+  raioDeAtaque: 0.75
   taxaDeAtaque: 1
   camadaInimigos:
     serializedVersion: 2
@@ -1386,6 +1424,28 @@ MonoBehaviour:
   slotPernas: {fileID: 0}
   slotArma: {fileID: 0}
   slotEscudo: {fileID: 0}
+--- !u!95 &1842176457
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1842176447}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4c93ab2bbf5f24440a43df6e832bc4cc, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1867095007
 GameObject:
   m_ObjectHideFlags: 0
@@ -1706,7 +1766,7 @@ GameObject:
   m_Layer: 0
   m_Name: AttackPoint
   m_TagString: Untagged
-  m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
