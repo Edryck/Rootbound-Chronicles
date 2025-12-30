@@ -99,7 +99,7 @@ public class InimigoBase : MonoBehaviour
     // Lógica de movimento padrão
     protected virtual void MoverParaPlayer()
     {
-        Vector2 novaPosicao = Vector2.MoveTowards(rb.position, alvo.position, velocidade * Time.fixedDeltaTime);
+        Vector2 novaPosicao = Vector2.MoveTowards(rb.position, alvo.position, velocidade * Time.deltaTime);
         rb.MovePosition(novaPosicao);
         // Adicionar a lógica para a troca de sprites de movimento aqui
     }
@@ -109,7 +109,7 @@ public class InimigoBase : MonoBehaviour
         // Aqui vai ser implementado no filho
     }
 
-    public void ReceberDano(int dano)
+    public void ReceberDano(int dano, TipoDano tipoDano)
     {
         vidaAtual -= dano;
         Debug.Log(nomeInimigo + " tomou " + dano + "de dano!");
@@ -132,7 +132,7 @@ public class InimigoBase : MonoBehaviour
     {
         if (other.tag == "Lava") // Caso tenha "dano ambiental", "area venenosa", etc. Adicionar um if/else
         {
-            ReceberDano(1); // O inimigo vai recceber dano, futuramente vou trabalhar o sistema de resistencias, etc.
+            ReceberDano(1, TipoDano.Fisico); // O inimigo vai recceber dano, futuramente vou trabalhar o sistema de resistencias, etc.
             Debug.Log(nomeInimigo + " caiu na lava!");
         }
     }

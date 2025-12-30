@@ -14,5 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   nomeDoItem: Espada Velha Enferrujada
   descricao: "N\xE3o muito boa"
-  loreOculta: asfasfsaf
   icone: {fileID: 0}
+  loreOculta: asfasfsaf
+  tipo: 0
+  danoFisico: 5
+  danoMagico: 0
+  alcance: 2
+  defesaFisica: 0
+  resistenciaMagica: 0
+  spriteVisual: {fileID: 0}

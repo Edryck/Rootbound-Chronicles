@@ -4,6 +4,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movimento")]
     public float moveSpeed = 5f;
+    public Animator animator;
     private Rigidbody2D rb;
     private Vector2 movement;
     // Referência opcional caso a velocidade mude baseada na classe
@@ -19,6 +20,19 @@ public class PlayerMovement : MonoBehaviour
     {
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
+
+        // Passa os valores para o Animator
+        if (movement != Vector2.zero)
+        {
+            animator.SetFloat("Horizontal", movement.x);
+            animator.SetFloat("Vertical", movement.y);
+            animator.SetBool("IsMoving", true);
+        }
+        else
+        {
+            animator.SetBool("IsMoving", false);
+        }
+
         movement = movement.normalized;
     }
 

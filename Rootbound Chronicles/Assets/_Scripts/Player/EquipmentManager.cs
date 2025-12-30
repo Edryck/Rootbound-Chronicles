@@ -15,6 +15,7 @@ public class EquipmentManager : MonoBehaviour
     // Para guardar o que está equipado atualmente
     private ItemData[] equipamentosAtuais;
     private PlayerStats stats; // Para poder aumentar defesa/dano
+    private PlayerCombat combat;
 
     void Awake()
     {
@@ -28,6 +29,7 @@ public class EquipmentManager : MonoBehaviour
         equipamentosAtuais = new ItemData[numSlots];
 
         stats = GetComponent<PlayerStats>();
+        combat = GetComponent<PlayerCombat>();
     }
 
     public (int defesaFisica, int resistenciaMagica) CalcularBonusTotal()
@@ -46,17 +48,31 @@ public class EquipmentManager : MonoBehaviour
         return (def, res);
     }
 
+    public (int danoFisico, int danoMagico) CalcularAtaqueTotal()
+    {
+        int fisico = 0;
+        int magico = 0;
+
+        foreach (ItemData item in equipamentosAtuais)
+        {
+            if (item != null)
+            {
+                fisico += item.danoFisico;
+                magico += item.danoMagico;
+            }
+        }
+        return (fisico, magico);
+    }
+
     public void Equipar(ItemData novoItem)
     {
         if (novoItem.tipo == TipoEquipamento.Nenhum) return;
 
         // Para descobrir o índice (int) do tipo (Ex: Peito = 2)
         int slotIndex = (int)novoItem.tipo;
-
-        // Se já tiver algo, desequipa primeiro (troca)
-        // ItemData itemAntigo = equipamentosAtuais[slotIndex];
-        // if (itemAntigo != null) { Desequipar(slotIndex); }
-
+        // Se já tiver algo, desequipa primeiro
+        ItemData itemAntigo = equipamentosAtuais[slotIndex];
+        if (itemAntigo != null) { Desequipar(slotIndex); }
         // Salva o novo item
         equipamentosAtuais[slotIndex] = novoItem;
 
@@ -80,9 +96,10 @@ public class EquipmentManager : MonoBehaviour
                 break;
         }
 
-        // TODO: Aplica os Status (Lógica RPG)
-        // stats.aumentarDefesa(novoItem.modificadorArmadura);
-        stats.RecalcularStatus();
+        // Atualiza os status de defesa/resistência
+        if (stats == null) stats.RecalcularStatus();
+        // Atualiza os status de dano físico/mágico
+        if (combat != null) combat.RecalcularAtributosOfensivos();
         
         Debug.Log("Equipou: " + novoItem.nomeDoItem);
     }
@@ -113,14 +130,17 @@ public class EquipmentManager : MonoBehaviour
                     break;
             }
 
-            // TODO: Remove dos status
-            // stats.diminuirDefesa(itemRemovido.modificadorArmadura);
-
-            // TODO: Devolve pro inventário (Importante!)
-            Inventario.instance.AdicionarItem(itemRemovido, 1);
+            // Devolve pro inventário
+            if (Inventario.instance != null)
+                Inventario.instance.AdicionarItem(itemRemovido, 1);
 
             equipamentosAtuais[slotIndex] = null;
-            stats.RecalcularStatus();
+
+            // Atualiza os status de defesa/resistência
+            if (stats == null) stats.RecalcularStatus();
+            // Atualiza os status de dano físico/mágico
+            if (combat != null) combat.RecalcularAtributosOfensivos();
+
             Debug.Log("Desequipou: " + itemRemovido.nomeDoItem);
         }
     }
