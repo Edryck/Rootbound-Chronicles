@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 0c169884ea63afb4095c08516538719a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - caixaDialogo: {instanceID: 0}
+  - textoUI: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

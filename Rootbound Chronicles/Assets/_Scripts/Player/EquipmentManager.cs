@@ -20,6 +20,8 @@ public class EquipmentManager : MonoBehaviour
     void Awake()
     {
         instance = this;
+        int numSlots = System.Enum.GetNames(typeof(TipoEquipamento)).Length;
+        equipamentosAtuais = new ItemData[numSlots];
     }
 
     void Start()

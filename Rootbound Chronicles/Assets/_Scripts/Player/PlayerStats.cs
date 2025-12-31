@@ -92,11 +92,6 @@ public class PlayerStats : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Lava")
-        {
-            ReceberDano(2, TipoDano.Fisico); 
-        }
-
         // Zona de Cura
         if (other.tag == "Cura")
         {

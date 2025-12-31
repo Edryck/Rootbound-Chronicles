@@ -5,11 +5,11 @@ public class InimigoBase : MonoBehaviour
     [Header("Status do Inimigo")]
     public string nomeInimigo;
     public int vidaMaxima = 10;
-    public float velocidade = 2f;
+    public float velocidade = 3f;
     public float raioDeVisao = 5f; // Distância para começar a seguir
-    public float raioDeAtaque = 2f; // Distância para bater
+    public float raioDeAtaque = 1.5f; // Distância para bater
     public float taxaDeAtaque = 1f; // Ataques por segundo
-    public float proximoAtaque = 0f;
+    protected float proximoAtaque = 0f;
 
     [Header("Patrulha")]
     public float raioDePatrulha = 3f; // O quão longe ele anda do ponto inicial
@@ -22,8 +22,8 @@ public class InimigoBase : MonoBehaviour
     public int vidaAtual;
     private Rigidbody2D rb;
     protected Transform alvo;
-
     protected Animator animator;
+    private Vector2 ultimaPosicao;
 
     // Estados simples para IA
     protected enum Estado {
@@ -47,11 +47,21 @@ public class InimigoBase : MonoBehaviour
             alvo = playerObj.transform;
         }
         pontoInicial = transform.position;
+        ultimaPosicao = transform.position;
         DefinirNovoDestinoPatrulha();
     }
     
     protected virtual void Update()
     {
+        if (vidaAtual <= 0) return;
+
+        bool estaSeMovendo = Vector2.Distance(transform.position, ultimaPosicao) > 0.001f;
+        if (animator != null)
+        {
+            animator.SetBool("IsMoving", estaSeMovendo);
+        }
+        ultimaPosicao = transform.position; // Atualiza para o próximo frame
+
         if (alvo == null) return;
 
         float distancia = Vector2.Distance(transform.position, alvo.position);
@@ -59,25 +69,7 @@ public class InimigoBase : MonoBehaviour
         if (distancia > raioDeVisao)
         {
             estadoAtual = Estado.Ocioso;
-
-            // Comportamento de patrulha
-            // Anda mais devagar na patrulha
-            Vector2 novaPosPatrulha = Vector2.MoveTowards(rb.position, destinoPatrulha, velocidade * 0.5f * Time.deltaTime);
-            rb.MovePosition(novaPosPatrulha);
-
-            // Se chegou no destino
-            if (Vector2.Distance(transform.position, destinoPatrulha) < 0.2f)
-            {
-                if (tempoEspera <= 0)
-                {
-                    DefinirNovoDestinoPatrulha();
-                    tempoEspera = tempoEntrePassos;
-                }
-                else
-                {
-                    tempoEspera -= Time.deltaTime;
-                }
-            }
+            Patrulhar();
         }
         else if (distancia > raioDeAtaque)
         {
@@ -95,6 +87,25 @@ public class InimigoBase : MonoBehaviour
         }
     }
 
+    void Patrulhar()
+    {
+        Vector2 novaPosPatrulha = Vector2.MoveTowards(rb.position, destinoPatrulha, velocidade * 0.5f * Time.deltaTime);
+        rb.MovePosition(novaPosPatrulha);
+
+        if (Vector2.Distance(transform.position, destinoPatrulha) < 0.2f)
+        {
+            if (tempoEspera <= 0)
+            {
+                DefinirNovoDestinoPatrulha();
+                tempoEspera = tempoEntrePassos;
+            }
+            else
+            {
+                tempoEspera -= Time.deltaTime;
+            }
+        }
+    }
+
     void DefinirNovoDestinoPatrulha()
     {
         destinoPatrulha = pontoInicial + (Random.insideUnitCircle * raioDePatrulha);
@@ -105,7 +116,10 @@ public class InimigoBase : MonoBehaviour
     {
         Vector2 novaPosicao = Vector2.MoveTowards(rb.position, alvo.position, velocidade * Time.deltaTime);
         rb.MovePosition(novaPosicao);
-        // Adicionar a lógica para a troca de sprites de movimento aqui
+        
+        // Vira o Sprite (Flip)
+        if (alvo.position.x > transform.position.x) transform.localScale = new Vector3(1, 1, 1);
+        else transform.localScale = new Vector3(-1, 1, 1);
     }
 
     protected virtual void TentarAtacar()
@@ -116,7 +130,10 @@ public class InimigoBase : MonoBehaviour
     public void ReceberDano(int dano, TipoDano tipoDano)
     {
         vidaAtual -= dano;
-        Debug.Log(nomeInimigo + " tomou " + dano + "de dano!");
+        Debug.Log(nomeInimigo + " tomou " + dano + " de dano!");
+
+        // Para colocar a animação de quando ele leva dano
+        if(animator != null) animator.SetTrigger("Hunt"); 
 
         if (vidaAtual <= 0)
         {
@@ -133,22 +150,12 @@ public class InimigoBase : MonoBehaviour
             animator.SetTrigger("Morrer");
         }
         // Impede que o corpo morto continue perseguindo ou dando dano
-        rb.linearVelocity = Vector2.zero; // Para de deslizar
+        rb.simulated = false;
         GetComponent<Collider2D>().enabled = false; // Jogador anda por cima do corpo
         this.enabled = false; // Desliga o Update()
 
         // O 1f é o tempo em segundos. Caso seja necessário mudar... mude (Conforme a duração da animação)
         Destroy(gameObject, 1f);
-    }
-
-    // Para o inimigo sentir o ambiente, ex: ele leva dano na lava agora
-    protected void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.tag == "Lava") // Caso tenha "dano ambiental", "area venenosa", etc. Adicionar um if/else
-        {
-            ReceberDano(1, TipoDano.Fisico); // O inimigo vai recceber dano, futuramente vou trabalhar o sistema de resistencias, etc.
-            Debug.Log(nomeInimigo + " caiu na lava!");
-        }
     }
 
     // Desenha círculos no editor para ver a visão do inimigo

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AdaptivePerformance;
 
 public class ObjetoInterativo : MonoBehaviour
 {
@@ -36,6 +37,14 @@ public class ObjetoInterativo : MonoBehaviour
         if (gameObject.tag == "Bau")
         {
             Debug.Log("Você interagiu com: " + gameObject.name);
+        }
+        if (gameObject.tag == "Lore")
+        {
+            if (SistemaDialogo.instance != null)
+            {
+                // SistemaDialogo.instance.MostrarTexto(textoDaLore);
+            }
+            // TODO: Adicionar os Sons
         }
         // Aqui vai uma lógica específica
         // Como dar item, abrir dialogo, salvar jogo
