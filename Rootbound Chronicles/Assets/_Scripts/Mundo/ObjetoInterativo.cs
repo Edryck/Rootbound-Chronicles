@@ -5,7 +5,7 @@ public class ObjetoInterativo : MonoBehaviour
 {
     private bool jogadorPerto = false;
     private GameObject jogadorRef; // Referência para lembrar que é o jogador
-    public ItemData itemParaDar;
+    public ItemData item;
 
     void Update()
     {
@@ -23,12 +23,29 @@ public class ObjetoInterativo : MonoBehaviour
             // Acha o invetário do jogador
             Inventario inv = jogadorRef.GetComponent<Inventario>();
 
-            if (inv != null && itemParaDar != null)
+            if (inv != null && item != null)
             {
                 // Aqui passa o nome do objeto como nome do item
-                inv.AdicionarItem(itemParaDar, 1);
+                inv.AdicionarItem(item, 1);
                 Destroy(gameObject);
             }
+        }
+        if (gameObject.CompareTag("Checkpoint"))
+        {
+            if (GameManager.instance != null)
+            {
+                Vector3 posicaoDoPlayer = GameManager.instance.player.transform.position;
+                GameManager.instance.SalvarCheckpoint(posicaoDoPlayer);
+                if (SistemaDialogo.instance != null)
+                    {
+                        SistemaDialogo.instance.MostrarTexto("A luz da Deusa protege sua alma. (Jogo Salvo)");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("SistemaDialogo não encontrado na cena!");
+                    }
+            }
+            Debug.Log("Você interagiu com: " + gameObject.name);
         }
         if (gameObject.tag == "NPC")
         {
@@ -42,7 +59,7 @@ public class ObjetoInterativo : MonoBehaviour
         {
             if (SistemaDialogo.instance != null)
             {
-                // SistemaDialogo.instance.MostrarTexto(textoDaLore);
+                SistemaDialogo.instance.MostrarTexto(item.loreOculta);
             }
             // TODO: Adicionar os Sons
         }

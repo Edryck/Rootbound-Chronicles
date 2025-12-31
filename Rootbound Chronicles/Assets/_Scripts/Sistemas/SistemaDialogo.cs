@@ -9,7 +9,7 @@ public class SistemaDialogo : MonoBehaviour
 
     [Header("Configuração da UI")]
     public GameObject caixaDialogo;
-    public TextMeshPro textoUI;
+    public TextMeshProUGUI textoUI;
 
     [Header("Configuração do Efeito")]
     // Velocidade de Digitação, quanto menor, mais rápido

@@ -10,6 +10,8 @@ TagManager:
   - Bau
   - NPC
   - Item
+  - Lama
+  - Veneno
   layers:
   - Default
   - TransparentFX

@@ -85,8 +85,17 @@ public class PlayerStats : MonoBehaviour
 
     protected virtual void Morrer()
     {
-        Debug.Log("Morreu!"); // TODO: Depois tem que colocar alguma coisa pra puxar o motivo da morte
-        Destroy(gameObject); // TODO: Já avisando que vai dar merda isso, vai bugar a câmera
+        Debug.Log("Você Morreu!"); // TODO: Depois tem que colocar alguma coisa pra puxar o motivo da morte
+        
+        // Chama o Game Manager
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.GameOver();
+        }
+
+        // Desativa o script de movimento para o jogador não ficar andando no fundo
+        GetComponent<PlayerMovement>().enabled = false; 
+        GetComponent<Collider2D>().enabled = false;
         // Aqui pode dropar loot
     }
 
