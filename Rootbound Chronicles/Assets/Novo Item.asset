@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   nomeDoItem: Espada Velha Enferrujada
   descricao: "N\xE3o muito boa"
-  icone: {fileID: 0}
-  loreOculta: asfasfsaf
-  tipo: 0
+  icone: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  loreOculta: "Pertenceu ao capit\xE3o fasfalha que morreu de T\xE9tano"
+  tipo: 4
   danoFisico: 5
   danoMagico: 0
   alcance: 2
   defesaFisica: 0
   resistenciaMagica: 0
-  spriteVisual: {fileID: 0}
+  spriteVisual: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
