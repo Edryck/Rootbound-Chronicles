@@ -2,12 +2,13 @@ using UnityEngine;
 
 public enum TipoEquipamento
 {
-    Nenhum, // Para item normais (moeda, poção, madeira, etc)
-    Cabeca, // Capacetes
-    Peito,  // Peitorais
-    Pernas, // Calças/Botas
-    Arma,   // Espadas/Machados/Cajados
-    Escudo  // Escudos
+    Nenhum,    // Para item normais (moeda, poção, madeira, etc)
+    Cabeca,    // Capacetes
+    Peito,     // Peitorais
+    Pernas,    // Calças/Botas
+    Arma,      // Espadas/Machados/Cajados
+    Escudo,    // Escudos
+    Ferramenta // Ferramentas
 }
 
 public enum TipoDano 

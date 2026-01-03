@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
+    public static PlayerCombat instance;
+
     [Header("Atributos de Combate")]
     public int danoBase = 2; 
     public int danoFisicoTotal;

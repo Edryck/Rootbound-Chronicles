@@ -4,12 +4,14 @@ public class PlayerStats : MonoBehaviour
 {
     // Classes existentes
     public enum Classe {
-        Guerreiro,
-        Mago, 
-        Arqueiro,
-        Ladino,
-        Clérigo
+        Piromante,
+        Guardiao,
+        Sombra,
+        Luz,
+        LaminaRunica
     }
+
+    public static PlayerStats instance;
 
     [Header("Configuração da Classe")]
     public Classe classeAtual;

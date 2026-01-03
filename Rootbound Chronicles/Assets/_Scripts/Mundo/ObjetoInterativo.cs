@@ -1,91 +1,100 @@
 using UnityEngine;
-using UnityEngine.AdaptivePerformance;
 
 public class ObjetoInterativo : MonoBehaviour
 {
     private bool jogadorPerto = false;
-    private GameObject jogadorRef; // Referência para lembrar que é o jogador
-    public ItemData item;
+    private GameObject jogadorRef;
+
+    [Header("Tipo de Interação")]
+    public bool ehItemColetavel;
+    public bool ehCheckpoint;
+    public bool ehLore;
+
+    [Header("Dados (Preencha o que for usar)")]
+    public ItemData itemParaDar; // Se for item
+    public CodexEntry paginaDoCodex; // Se for Lore/Inimigo/Estátua
+
+    [Header("Configuração de Inspeção")]
+    // Se true, só inspeciona. Se false, interage (pega/salva)
+    public bool apenasInspecao = false; 
 
     void Update()
     {
-        if (jogadorPerto == true && Input.GetKeyDown(KeyCode.E))
+        if (jogadorPerto && Input.GetKeyDown(KeyCode.E))
         {
             Interagir();
         }
     }
 
-    // Função que faz a ação acontecer
     void Interagir()
     {
-        if (gameObject.tag == "Item")
+        // Lógica de Item (Coleta)
+        if (ehItemColetavel && itemParaDar != null)
         {
-            // Acha o invetário do jogador
             Inventario inv = jogadorRef.GetComponent<Inventario>();
-
-            if (inv != null && item != null)
+            if (inv != null)
             {
-                // Aqui passa o nome do objeto como nome do item
-                inv.AdicionarItem(item, 1);
-                Destroy(gameObject);
+                if(inv.AdicionarItem(itemParaDar, 1))
+                {
+                    // Se o item tiver uma página de lore vinculada, desbloqueia!
+                    if (paginaDoCodex != null) CodexManager.instance.DesbloquearEntrada(paginaDoCodex);
+                    Destroy(gameObject);
+                }
             }
+            return; // Para por aqui se for item
         }
-        if (gameObject.CompareTag("Checkpoint"))
+
+        // Lógica de Checkpoint
+        if (ehCheckpoint)
         {
             if (GameManager.instance != null)
             {
-                Vector3 posicaoDoPlayer = GameManager.instance.player.transform.position;
-                GameManager.instance.SalvarCheckpoint(posicaoDoPlayer);
-                if (SistemaDialogo.instance != null)
-                    {
-                        SistemaDialogo.instance.MostrarTexto("A luz da Deusa protege sua alma. (Jogo Salvo)");
-                    }
-                    else
-                    {
-                        Debug.LogWarning("SistemaDialogo não encontrado na cena!");
-                    }
+                GameManager.instance.SalvarCheckpoint(GameManager.instance.player.transform.position);
+                SistemaDialogo.instance.MostrarTexto("Vínculo neural estabelecido. (Jogo Salvo)");
             }
-            Debug.Log("Você interagiu com: " + gameObject.name);
         }
-        if (gameObject.tag == "NPC")
+
+        // Lógica de Lore / Inspeção (O Códice)
+        if (ehLore || paginaDoCodex != null)
         {
-            Debug.Log("Você interagiu com o NPC: " + gameObject.name);
-        }
-        if (gameObject.tag == "Bau")
-        {
-            Debug.Log("Você interagiu com: " + gameObject.name);
-        }
-        if (gameObject.tag == "Lore")
-        {
-            if (SistemaDialogo.instance != null)
+            if (CodexManager.instance != null && paginaDoCodex != null)
             {
-                SistemaDialogo.instance.MostrarTexto(item.loreOculta);
+                // Desbloqueia no menu
+                CodexManager.instance.DesbloquearEntrada(paginaDoCodex);
+
+                // Mostra o texto na tela imediatamente (Feedback)
+                // Se já tiver desbloqueado antes, mostra a lore oculta se tiver
+                string textoParaMostrar = paginaDoCodex.loreOculta;
+                
+                if (paginaDoCodex.foiDescoberto && paginaDoCodex.loreRevelada)
+                {
+                    // TODO: Aqui entraria a checagem de "Nível de Percepção" do jogador no futuro
+                    // Por enquanto, vamos liberar se inspecionar pela segunda vez
+                    CodexManager.instance.RevelarLoreOculta(paginaDoCodex);
+                    textoParaMostrar += "\n\n<color=red>[SINTONIA PROFUNDA]:</color> " + paginaDoCodex.loreOculta;
+                }
+
+                SistemaDialogo.instance.MostrarTexto(textoParaMostrar);
             }
-            // TODO: Adicionar os Sons
         }
-        // Aqui vai uma lógica específica
-        // Como dar item, abrir dialogo, salvar jogo
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Player")
+        if (other.CompareTag("Player"))
         {
             jogadorPerto = true;
             jogadorRef = other.gameObject;
-            Debug.Log("Tecle E para interagir");
-            // Aqui liga o batão de interagir
+            // TODO: Mostrar alguma coisa pro jogador, para mostrar que dá para interagir
         }
     }
 
-    // Para detectar quando o jogador sai de perto
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.tag == "Player")
+        if (other.CompareTag("Player"))
         {
             jogadorPerto = false;
             jogadorRef = null;
-            // Aqui que vai desligar o balãozinho de interação
         }
     }
 }
