@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 // Se futuramente adicionar mais efeito, adicione aqui no enumerado
-public enum TipoEfeito { Queimadura, Veneno, Lentidao, CuraContinua }
+public enum TipoEfeito { Nenhum, Queimadura, Veneno, Lentidao, CuraContinua }
 
 public class GerenciadorDeStatus : MonoBehaviour
 {
@@ -20,10 +20,26 @@ public class GerenciadorDeStatus : MonoBehaviour
     [Header("Estado Atual")]
     public List<EfeitoAtivo> efeitosAtivos = new List<EfeitoAtivo>();
 
-    [Header("Configuração Visual")]
-    public Color corQueimadura = Color.red;
-    public Color corVeneno = Color.green;
-    public Color corGelo = Color.cyan;
+    [Header("Visual FX")]
+    public Animator animadorDeEfeitos;
+    
+    private Dictionary<TipoEfeito, string> animacoes = new Dictionary<TipoEfeito, string>()
+    {
+        { TipoEfeito.Queimadura, "Queimando" },
+        { TipoEfeito.Veneno,     "Envenenado" },
+        { TipoEfeito.Lentidao,   "Lento" },
+        { TipoEfeito.Nenhum,     "Normal" } // Estado vazio
+    };
+
+    // Lista de Prioridade: "O que é mais importante mostrar?"
+    // O topo da lista ganha do resto
+    private List<TipoEfeito> prioridade = new List<TipoEfeito>()
+    {
+        TipoEfeito.CuraContinua,
+        TipoEfeito.Queimadura,
+        TipoEfeito.Veneno,
+        TipoEfeito.Lentidao
+    };
 
     // Referências aos componentes do dono
     private PlayerStats playerStats;
@@ -52,7 +68,6 @@ public class GerenciadorDeStatus : MonoBehaviour
 
         // Configuração Visual (Paper Doll)
         spritesDoCorpo = GetComponentsInChildren<SpriteRenderer>();
-        SalvarCoresOriginais();
     }
 
     void Update()
@@ -109,18 +124,44 @@ public class GerenciadorDeStatus : MonoBehaviour
         }
     }
 
+    void AtualizarVisual()
+    {
+        if (animadorDeEfeitos == null) return;
+
+        TipoEfeito efeitoParaMostrar = TipoEfeito.Nenhum;
+
+        // O Loop Mágico:
+        // Percorre a lista de prioridade. O primeiro que encontrar ativo, ele escolhe e PARA.
+        foreach (TipoEfeito tipo in prioridade)
+        {
+            if (efeitosAtivos.Exists(x => x.tipo == tipo))
+            {
+                efeitoParaMostrar = tipo;
+                break; // Achou o mais importante, para de procurar!
+            }
+        }
+
+        // Busca o nome da string no dicionário e toca
+        // Isso evita erros de digitação de string ("Queimando" vs "queimando")
+        if (animacoes.ContainsKey(efeitoParaMostrar))
+        {
+            string nomeDaAnimacao = animacoes[efeitoParaMostrar];
+            animadorDeEfeitos.Play(nomeDaAnimacao);
+        }
+    }
+
     void AoIniciarEfeito(EfeitoAtivo efeito)
     {
         switch (efeito.tipo)
         {
             case TipoEfeito.Queimadura:
-                PintarCorpo(corQueimadura);
+                AtualizarVisual();
                 break;
             case TipoEfeito.Veneno:
-                PintarCorpo(corVeneno);
+                AtualizarVisual();
                 break;
             case TipoEfeito.Lentidao:
-                PintarCorpo(corGelo);
+                AtualizarVisual();
                 AplicarLentidao(efeito.potencia);
                 break;
         }
@@ -138,7 +179,20 @@ public class GerenciadorDeStatus : MonoBehaviour
             {
                 // Aplica Dano
                 AplicarDano(efeito.potencia, efeito.tipo == TipoEfeito.Queimadura ? TipoDano.Fisico : TipoDano.Magico);
+                
+                // Reseta o timer do tick
+                efeito.tempoParaProximoTick = efeito.intervaloDoTick;
+            }
+        }
+        if (efeito.tipo == TipoEfeito.CuraContinua)
+        {
+            efeito.tempoParaProximoTick -= Time.deltaTime;
 
+            if (efeito.tempoParaProximoTick <= 0)
+            {
+                // Aplica Cura
+                AplicarCura(efeito.potencia);
+            
                 // Reseta o timer do tick
                 efeito.tempoParaProximoTick = efeito.intervaloDoTick;
             }
@@ -158,7 +212,7 @@ public class GerenciadorDeStatus : MonoBehaviour
         // Se não tiver mais nenhum efeito ativo, restaura a cor original
         if (efeitosAtivos.Count <= 1)
         {
-            RestaurarCor();
+            AtualizarVisual();
         }
     }
 
@@ -166,6 +220,12 @@ public class GerenciadorDeStatus : MonoBehaviour
     {
         if (playerStats != null) playerStats.ReceberDano(dano, tipo);
         if (inimigoStats != null) inimigoStats.ReceberDano(dano, tipo);
+    }
+
+    void AplicarCura(int cura)
+    {
+        // Só aplica cura para o jogador
+        if (playerStats != null) playerStats.Curar(cura);
     }
 
     void AplicarLentidao(int porcentagem)
@@ -191,33 +251,19 @@ public class GerenciadorDeStatus : MonoBehaviour
         estaComLentidao = false;
     }
 
-    void SalvarCoresOriginais()
-    {
-        if (spritesDoCorpo.Length > 0) {
-             coresOriginais = new Color[spritesDoCorpo.Length];
-             for(int i=0; i<spritesDoCorpo.Length; i++) coresOriginais[i] = spritesDoCorpo[i].color;
-        }
-    }
-
-    void PintarCorpo(Color cor)
-    {
-        foreach(var s in spritesDoCorpo) if(s) s.color = cor;
-    }
-
-    void RestaurarCor() {
-        for(int i=0; i<spritesDoCorpo.Length; i++) if(spritesDoCorpo[i]) spritesDoCorpo[i].color = coresOriginais[i];
-    }
-
     // Detector de áreas que aplica efeito
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Lava") 
-            AplicarEfeito(TipoEfeito.Queimadura, 1, 3f, 1f); // Dano 1, 3 seg, tick de 1s
+            AplicarEfeito(TipoEfeito.Queimadura, 1, 3f, 1f);    // Dano 1, 3 seg, tick de 1s
             
         if (other.tag == "Veneno")
-            AplicarEfeito(TipoEfeito.Veneno, 2, 5f, 2f); // Dano 2, 5 seg, tick de 2s
+            AplicarEfeito(TipoEfeito.Veneno, 2, 5f, 2f);        // Dano 2, 5 seg, tick de 2s
 
         if (other.tag == "Lama")
-            AplicarEfeito(TipoEfeito.Lentidao, 50, 2f); // 50% mais lento por 2s
+            AplicarEfeito(TipoEfeito.Lentidao, 50, 2f);         // 50% mais lento por 2s
+        
+        if (other.tag == "Cura" || other.tag == "Checkpoint")
+            AplicarEfeito(TipoEfeito.CuraContinua, 5, 10f, 1f); // Cura 5, 10 seg, ticks de 1s
     }
 }
